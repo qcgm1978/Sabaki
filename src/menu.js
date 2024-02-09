@@ -410,6 +410,16 @@ exports.get = function(props = {}) {
           accelerator: 'Right',
           click: () => sabaki.goToSiblingVariation(1)
         },
+        {
+          label: i18n.t('menu.navigation', '&Decrement Downstream Variation'),
+          accelerator: 'Shift+Left',
+          click: () => sabaki.changeDownstreamVariation(-1)
+        },
+        {
+          label: i18n.t('menu.navigation', '&Increment Downstream Variation'),
+          accelerator: 'Shift+Right',
+          click: () => sabaki.changeDownstreamVariation(1)
+        },
         {type: 'separator'},
         {
           label: i18n.t('menu.navigation', 'Go to Move N&umber'),
