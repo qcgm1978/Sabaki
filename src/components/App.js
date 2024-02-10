@@ -178,21 +178,24 @@ class App extends Component {
     // Handle window closing
 
     window.addEventListener('beforeunload', evt => {
-      if (this.closeWindow) return
+      if (this.closeWindow) {
+        return
+      }
 
       evt.returnValue = ' '
 
-      setTimeout(() => {
-        if (sabaki.askForSave()) {
-          sabaki.detachEngines(
-            this.state.attachedEngineSyncers.map(syncer => syncer.id)
-          )
+      // const bool = !setting.get('debug.dev_tools')
+      // setTimeout(() => {
+      //   if (sabaki.askForSave(bool)) {
+      //     sabaki.detachEngines(
+      //       this.state.attachedEngineSyncers.map(syncer => syncer.id)
+      //     )
 
-          gtplogger.close()
-          this.closeWindow = true
-          sabaki.window.close()
-        }
-      })
+      //     gtplogger.close()
+      //     this.closeWindow = true
+      //     sabaki.window.close()
+      //   }
+      // })
     })
 
     sabaki.newFile()

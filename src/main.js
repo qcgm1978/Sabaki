@@ -7,7 +7,8 @@ const {
   BrowserWindow,
   Menu
 } = require('electron')
-const {resolve} = require('path')
+
+const { resolve } = require('path')
 const i18n = require('./i18n')
 const setting = require('./setting')
 const updater = require('./updater')
@@ -56,20 +57,21 @@ function newWindow(path) {
     setting.set('window.maximized', false)
   })
 
-  // window.on('closed', () => {
-  //   window = null
-  // })
+  window.on('closed', () => {
+    window = null
+  })
 
   window.webContents.audioMuted = !setting.get('sound.enable')
 
   window.webContents.on('did-finish-load', () => {
-    if (path) window.webContents.send('load-file', path)
+    if (path && path != '.') {
+      window.webContents.send('load-file', path)
+    }
     window.webContents.openDevTools()
-
   })
 
-  window.webContents.setWindowOpenHandler(({url, frameName}) => {
-    return {action: 'deny'}
+  window.webContents.setWindowOpenHandler(({ url, frameName }) => {
+    return { action: 'deny' }
   })
 
   window.loadURL(`file://${resolve(__dirname, '../index.html')}`)
@@ -97,10 +99,10 @@ function buildMenu(props = {}) {
         let key = item.clickMain
 
         item.click = () =>
-          ({
-            newWindow,
-            checkForUpdates: () => checkForUpdates({showFailDialogs: true})
-          }[key]())
+        ({
+          newWindow,
+          checkForUpdates: () => checkForUpdates({ showFailDialogs: true })
+        }[key]())
 
         delete item.clickMain
       }
@@ -129,7 +131,7 @@ function buildMenu(props = {}) {
   }
 }
 
-async function checkForUpdates({showFailDialogs = false} = {}) {
+async function checkForUpdates({ showFailDialogs = false } = {}) {
   try {
     let t = i18n.context('updater')
     let info = await updater.check(`SabakiHQ/${app.name}`)
@@ -166,7 +168,7 @@ async function checkForUpdates({showFailDialogs = false} = {}) {
             version: app.getVersion()
           })
         },
-        () => {}
+        () => { }
       )
     }
   } catch (err) {
@@ -192,7 +194,7 @@ async function main() {
     if (process.platform !== 'darwin') {
       app.quit()
     } else {
-      buildMenu({disableAll: true})
+      buildMenu({ disableAll: true })
     }
   })
 
@@ -228,8 +230,8 @@ async function main() {
           appName: app.name
         }
       ) +
-        '\n\n' +
-        err.stack
+      '\n\n' +
+      err.stack
     )
 
     process.exit(1)

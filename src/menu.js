@@ -14,7 +14,7 @@ const dialog = isRenderer ? require('./modules/dialog') : null
 const setting = isRenderer
   ? remote.require('./setting')
   : nativeRequire('./setting')
-
+  
 exports.get = function(props = {}) {
   let toggleSetting = key => setting.set(key, !setting.get(key))
   let selectTool = tool => (
@@ -61,7 +61,9 @@ exports.get = function(props = {}) {
           label: i18n.t('menu.file', '&Open…'),
           accelerator: 'CmdOrCtrl+O',
           enabled: !disableGameLoading,
-          click: () => sabaki.loadFile()
+          click: () => {
+            return sabaki.loadFile()
+          }
         },
         {
           label: i18n.t('menu.file', '&Save'),
