@@ -56,14 +56,16 @@ function newWindow(path) {
     setting.set('window.maximized', false)
   })
 
-  window.on('closed', () => {
-    window = null
-  })
+  // window.on('closed', () => {
+  //   window = null
+  // })
 
   window.webContents.audioMuted = !setting.get('sound.enable')
 
   window.webContents.on('did-finish-load', () => {
     if (path) window.webContents.send('load-file', path)
+    window.webContents.openDevTools()
+
   })
 
   window.webContents.setWindowOpenHandler(({url, frameName}) => {
