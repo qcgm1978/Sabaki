@@ -13,7 +13,12 @@ const i18n = require('./i18n')
 const setting = require('./setting')
 const updater = require('./updater')
 require('@electron/remote/main').initialize()
-
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  // log('certificate-error');
+  //允许私有证书
+  event.preventDefault()
+  callback(true)
+});
 let windows = []
 let openfile = null
 

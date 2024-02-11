@@ -13,8 +13,8 @@ const pass_command = 'pass'
 // Caution: need to call set_board_size in *each* process
 
 let the_board_size = 19
-function board_size() {return the_board_size}
-function set_board_size(n) {the_board_size = n}
+function board_size() { return the_board_size }
+function set_board_size(n) { the_board_size = n }
 
 function with_board_size(bsize, proc, ...args) {
     const previous = board_size();
@@ -32,7 +32,7 @@ const idx_pass = [-1, -1]
 const stars = {
     19: [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]],
     13: [[3, 3], [3, 9], [9, 3], [9, 9], [6, 6]],
-    9: [[4,4]],
+    9: [[4, 4]],
 }
 
 function idx2rowcol(i, j) {
@@ -45,7 +45,7 @@ function idx2move(i, j) {
     const [row, col] = idx2rowcol(i, j); return truep(row) && (col + row)
 }
 
-function move2idx(move) {return move2idx_maybe(move) || idx_pass}
+function move2idx(move) { return move2idx_maybe(move) || idx_pass }
 function move2idx_maybe(move) {
     const m = move.match(/([A-HJ-T])((1[0-9])|[1-9])/), [dummy, col, row] = m || []
     return m && [board_size() - to_i(row), col_name.indexOf(col)]
@@ -68,13 +68,13 @@ function clipped_translator(from, to) {
 function idx2coord_translator_pair(canvas, xmargin, ymargin, is_square) {
     // u = j, v = i
     const [uv2xy, xy2uv] =
-          uv2coord_translator_pair(canvas, [0, board_size() - 1], [0, board_size() - 1],
-                                   xmargin, ymargin, is_square)
+        uv2coord_translator_pair(canvas, [0, board_size() - 1], [0, board_size() - 1],
+            xmargin, ymargin, is_square)
     return [((i, j) => uv2xy(j, i)), ((x, y) => xy2uv(x, y).reverse())]
 }
 
 function uv2coord_translator_pair(canvas, u_min_max, v_min_max, xmargin, ymargin,
-                                  is_square) {
+    is_square) {
     // u: horizontal, v: vertical
     let w = canvas.width, h = canvas.height
     is_square && (w = h = Math.min(w, h))
@@ -99,7 +99,7 @@ function idx2sgfpos(i, j) {
 }
 
 function sgfpos2idx(pos) {
-    if (pos === sgfpos_pass || pos === sgfpos_pass_FF4) {return idx_pass}
+    if (pos === sgfpos_pass || pos === sgfpos_pass_FF4) { return idx_pass }
     const [j, i] = pos.split('').map(c => sgfpos_name.indexOf(c))
     return [i, j]
 }
@@ -113,6 +113,11 @@ function move2sgfpos(move) {
 function sgfpos2move(pos) {
     return idx2move(...sgfpos2idx(pos))
 }
+function to_s(x) {
+    return x + ''
+}
+function truep (x){return (!!x || x === 0 || x === '')}
+
 
 module.exports = {
     pass_command,

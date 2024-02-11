@@ -19,7 +19,7 @@ import * as gobantransformer from './gobantransformer.js'
 import * as gtplogger from './gtplogger.js'
 import * as helper from './helper.js'
 import * as sound from './sound.js'
-import { sgfpos2move } from './coord.js'
+import { sgfpos2move,idx2move } from './coord.js'
 deadstones.useFetch('./node_modules/@sabaki/deadstones/wasm/deadstones_bg.wasm')
 
 const { app } = remote
@@ -778,8 +778,8 @@ class Sabaki extends EventEmitter {
       else if (answer === 2) return false
     }
 
-    return bool||true
-    // return false
+    // return bool || true
+    return true
   }
 
   askForReload() {
@@ -829,7 +829,7 @@ class Sabaki extends EventEmitter {
       path += `?${s}`
     }
     // todo need set security policy(maybe catch the error as lizgoban project did)
-    return fetch(`https://localhost:8010/${path}`, options).then((res) => {
+    return fetch(`http://localhost:7237/${path}`, options).then((res) => {
       return res.json();
     });
   }
@@ -1063,12 +1063,16 @@ class Sabaki extends EventEmitter {
   }
 
   sync_lizgoban_move(pos_or_move) {
-    let move = pos_or_move
+    let move 
     if (pos_or_move instanceof Array) {
-      move = sgfpos2move(...pos_or_move)
+      move=idx2move(...pos_or_move)
+    }else {
+      move = sgfpos2move(pos_or_move)
     }
     this.request_local_server('sync_sabaki_move', {
       move, data: this.state.gameTrees[0].root.data
+    }).then(data => {
+      data
     })
   }
 
@@ -1475,9 +1479,11 @@ class Sabaki extends EventEmitter {
     let { gameTrees, gameIndex, gameCurrents, treePosition } = this.state
     let tree = gameTrees[gameIndex]
     let node = tree.navigate(treePosition, step, gameCurrents[gameIndex])
-    if (node != null) this.setCurrentTreePosition(tree, node.id)
-    const move = Object.values(node.data)[0][0]
-    this.sync_lizgoban_move(move)
+    if (node != null) {
+      this.setCurrentTreePosition(tree, node.id)
+      const move = Object.values(node.data)[0][0]
+      this.sync_lizgoban_move(move)
+    }
   }
 
   goToMoveNumber(number) {
@@ -2970,30 +2976,5 @@ class Sabaki extends EventEmitter {
 }
 
 const sabaki = new Sabaki()
-const http = require('http');
 
-const server = http.createServer((req, res) => {
-  const url = req.url;
-  // 根据 URL 来处理不同的请求
-  switch (url) {
-    case '/':
-      // 返回首页
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end('<h1>Hello World!</h1>');
-      break;
-    case '/api/root/data':
-      const data = sabaki.state.gameTrees[0].root.data
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(data));
-      break;
-    default:
-      // 返回 404 错误
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('Not Found');
-  }
-});
-
-server.listen(7237, () => {
-  console.log('Server listening on port 7237');
-});
 export default sabaki
