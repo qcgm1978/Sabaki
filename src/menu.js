@@ -14,7 +14,7 @@ const dialog = isRenderer ? require('./modules/dialog') : null
 const setting = isRenderer
   ? remote.require('./setting')
   : nativeRequire('./setting')
-  
+
 exports.get = function(props = {}) {
   let toggleSetting = key => setting.set(key, !setting.get(key))
   let selectTool = tool => (
@@ -82,7 +82,16 @@ exports.get = function(props = {}) {
             {
               label: i18n.t('menu.file', '&Load SGF'),
               enabled: !disableGameLoading,
-              click: () => sabaki.loadContent(clipboard.readText(), 'sgf')
+              click: () => {
+                // clipboard.read is experimental in Electron v28 [2024-02-02]
+                const mac_url = clipboard.read('public.file-url') // for Cmd-C on Finder (Mac)
+                if (mac_url) {
+                  const address = decodeURIComponent(new URL(mac_url).pathname)
+                  sabaki.loadFile(address, { suppressAskForSave: true, clearHistory:true })
+                  return
+                }
+                return sabaki.loadContent(clipboard.readText(), 'sgf')
+              }
             },
             {
               label: i18n.t('menu.file', '&Copy SGF'),
